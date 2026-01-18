@@ -3,7 +3,11 @@ const mongoose = require("mongoose");
 
 const applicationSchema = new mongoose.Schema({
   email: String,
-  loanType: Object,
+  loanType: {
+    loanName: String,
+    loanAmount: Number,
+    tenure: Number
+  },
 
   personal: Object,
   bank: Object,
