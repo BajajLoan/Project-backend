@@ -13,17 +13,4 @@ router.post("/apply", auth, async (req, res) => {
   res.json(app);
 });
 
-// UPLOAD IMAGE
-// router.post("/charge/upload-image", auth, async (req, res) => {
-//   const { applicationId, chargeId, image } = req.body;
-
-//   const app = await Application.findById(applicationId);
-//   const charge = app.charges.find(c => c.chargeId == chargeId);
-
-//   charge.image = image;
-//   await app.save();
-
-//   res.json({ message: "Image uploaded" });
-// });
-
 module.exports = router;

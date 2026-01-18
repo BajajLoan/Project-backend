@@ -1,7 +1,6 @@
 module.exports = (req, res, next) => {
-  const admins = ["serviceinvestor.bajaj@gmail.com"];
-  if (!admins.includes(req.user.email))
+  if (!req.user || req.user.role !== "admin") {
     return res.status(403).json({ message: "Admin access denied" });
-
+  }
   next();
 };
