@@ -1,0 +1,20 @@
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
+
+const connectDB = require("./config/db");
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+connectDB();
+
+app.use("/api/auth", require("./router/authRoute"));
+app.use("/api/admin", require("./router/adminChargeRoute"));
+app.use("/api", require("./router/userApplyRoute"));
+app.use("/api",require("./router/userChargeRoute"))
+
+app.listen(process.env.PORT, () =>
+  console.log("🚀 Server running")
+);
