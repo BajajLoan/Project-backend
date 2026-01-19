@@ -7,7 +7,7 @@ const router = express.Router();
 
 const transporter = nodemailer.createTransport({
    host: "smtp-relay.brevo.com",
-  port: 587,       // 465 if using secure SSL
+  port: 587,       
   secure: false,  
   auth: {
     user: process.env.EMAIL_USER,

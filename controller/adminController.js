@@ -76,3 +76,42 @@ exports.loginAdmin = async (req, res) => {
     res.status(500).json({ message: "Login failed" });
   }
 };
+
+
+/**
+ * CHANGE ADMIN PASSWORD
+ */
+exports.changeAdminPassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({ message: "All fields required" });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
+
+    const admin = await Admin.findById(req.user.id);
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, admin.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Old password incorrect" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    admin.password = hashedPassword;
+    await admin.save();
+
+    res.json({
+      message: "Password changed successfully"
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: "Change password failed" });
+  }
+};
