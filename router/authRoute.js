@@ -6,10 +6,9 @@ require("dotenv").config();
 const router = express.Router();
 
 const transporter = nodemailer.createTransport({
-   // service: "gmail",
-   host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
+   host: "smtp-relay.brevo.com",
+  port: 587,       // 465 if using secure SSL
+  secure: false,  
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
@@ -27,6 +26,7 @@ router.post("/send-otp", async (req, res) => {
   await user.save();
 
   await transporter.sendMail({
+     from: "a057a7001@smtp-brevo.com",
     to: email,
     subject: "Your OTP",
     html: `<h2>${otp}</h2>`
