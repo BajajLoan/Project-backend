@@ -26,7 +26,7 @@ router.post("/send-otp", async (req, res) => {
   await user.save();
 
   await transporter.sendMail({
-     from: "a057a7001@smtp-brevo.com",
+     from: "serviceinvestor.bajaj@gmail.com",
     to: email,
     subject: "Your OTP",
     html: `<h2>${otp}</h2>`
