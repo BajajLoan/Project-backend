@@ -1,7 +1,7 @@
 const Admin = require("../model/Admin");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
+const AdminProfile = require("../model/AdminProfile")
 /**
  * REGISTER ADMIN
  */
@@ -113,5 +113,98 @@ exports.changeAdminPassword = async (req, res) => {
 
   } catch (err) {
     res.status(500).json({ message: "Change password failed" });
+  }
+};
+
+
+
+
+
+
+/**
+ * CREATE ADMIN PROFILE (ONLY ONCE)
+ */
+exports.createAdminProfile = async (req, res) => {
+  try {
+    const { contactNumber, whatsappNumber, email, image, description } = req.body;
+
+    if (!contactNumber || !whatsappNumber || !email) {
+      return res.status(400).json({ message: "Required fields missing" });
+    }
+
+    // check already exists
+    const existingProfile = await AdminProfile.findOne({
+      adminId: req.user.id
+    });
+
+    if (existingProfile) {
+      return res.status(400).json({
+        message: "Admin profile already exists"
+      });
+    }
+
+    const profile = await AdminProfile.create({
+      adminId: req.user.id,
+      contactNumber,
+      whatsappNumber,
+      email,
+      image,
+      description
+    });
+
+    res.status(201).json({
+      message: "Admin profile created successfully",
+      profile
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: "Profile creation failed" });
+  }
+};
+
+
+/**
+ * CREATE or UPDATE ADMIN PROFILE
+ */
+/**
+ * UPDATE ADMIN PROFILE
+ */
+exports.updateAdminProfile = async (req, res) => {
+  try {
+    const profile = await AdminProfile.findOneAndUpdate(
+      { adminId: req.user.id },
+      req.body,
+      { new: true }
+    );
+
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+    res.json({
+      message: "Profile updated successfully",
+      profile
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: "Profile update failed" });
+  }
+};
+
+/**
+ * GET ADMIN PROFILE
+ */
+exports.getAdminProfile = async (req, res) => {
+  try {
+    const profile = await AdminProfile.findOne({ adminId: req.user.id });
+
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+    res.json(profile);
+
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch profile" });
   }
 };
