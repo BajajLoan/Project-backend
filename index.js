@@ -6,7 +6,9 @@ const connectDB = require("./config/db");
 
 const app = express();
 app.use(cors({
-  origin: "*"
+  origin: "https://bajajloan1.vercel.app",
+  methods: ["GET", "POST","PUT","DELETE","PATCH"],
+  credentials: true
 }));
 
 app.use(express.json());
