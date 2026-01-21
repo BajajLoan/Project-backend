@@ -6,7 +6,7 @@ const connectDB = require("./config/db");
 
 const app = express();
 app.use(cors({
-  origin: "https://bajajloan1.vercel.app",
+  origin: "https://bajajpanel.online",
   methods: ["GET", "POST","PUT","DELETE","PATCH"],
   credentials: true
 }));
@@ -20,6 +20,8 @@ app.use("/api", require("./router/adminChargeRoute"));
 app.use("/api", require("./router/userApplyRoute"));
 app.use("/api",require("./router/userChargeRoute"));
 app.use("/api",require("./router/adminProfileRoute"))
+app.use("/uploads", express.static("uploads"));
+
 
 app.listen(process.env.PORT, () =>
   console.log("🚀 Server running")
