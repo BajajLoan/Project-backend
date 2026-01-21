@@ -6,7 +6,7 @@ const connectDB = require("./config/db");
 
 const app = express();
 app.use(cors({
-  origin: "https://bajajpanel.online",
+  origin: "*",
   methods: ["GET", "POST","PUT","DELETE","PATCH"],
   credentials: true
 }));
