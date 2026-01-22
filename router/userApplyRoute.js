@@ -10,7 +10,7 @@ router.post(
   "/apply",
   auth,
   upload.fields([
-    { name: "aadhaar", maxCount: 1 },
+    { name: "aadhaarImageFile", maxCount: 1 },
     { name: "pan", maxCount: 1 }
   ]),
   async (req, res) => {
@@ -42,7 +42,7 @@ router.post(
         documents: {
           aadhaar: req.body.aadhaar,
           pan: req.body.pan,
-          aadhaarImage: req.files?.aadhaar?.[0]?.filename || null,
+          aadhaarImage: req.files?.aadhaarImageFile?.[0]?.filename || null,
           panImage: req.files?.pan?.[0]?.filename || null
         }
       });
