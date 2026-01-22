@@ -15,23 +15,45 @@ router.post(
   ]),
   async (req, res) => {
     try {
-      const app = await Application.create({
+      const application = await Application.create({
         email: req.user.email,
-        ...req.body,
+
+        loanType: {loanName:req.body.loanName,
+          loanAmount:req.body.loanAmount,
+          tenure:req.body.tenure,
+          emi:req.body.emi
+        }, // "personal"
+
+        personal: {
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          dob: req.body.dob,
+          phone: req.body.phone,
+          email: req.body.email,
+          address: req.body.address
+        },
+
+        bank: {
+          accountHolder: req.body.accountHolder,
+          accountNumber: req.body.accountNumber,
+          ifsc: req.body.ifsc
+        },
 
         documents: {
-          ...req.body.documents,
+          aadhaar: req.body.aadhaar,
+          pan: req.body.pan,
           aadhaarImage: req.files?.aadhaar?.[0]?.filename || null,
           panImage: req.files?.pan?.[0]?.filename || null
         }
       });
 
-      res.json({sucess:true,app,message:"Application has been submitted."});
+      res.json({ success: true, application });
     } catch (err) {
       res.status(500).json({ message: "Application failed" });
     }
   }
 );
+
 
 // GET LOGGED-IN USER APPLICATION
 router.get("/user-detail", auth, async (req, res) => {
