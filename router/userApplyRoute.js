@@ -50,4 +50,19 @@ router.get("/user-detail", auth, async (req, res) => {
   }
 });
 
+router.get("/pending-charges", async (req, res) => {
+  try {
+    const email = req.query.email;
+
+    const count = await Application.countDocuments({
+      email,
+      "charges.approval": 0
+    });
+
+    res.json({ hasPending: count > 0 });
+  } catch (err) {
+    res.status(500).json({ hasPending: false });
+  }
+});
+
 module.exports = router;
