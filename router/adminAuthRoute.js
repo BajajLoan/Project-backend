@@ -2,7 +2,7 @@ const express = require("express");
 const {
   registerAdmin,
   loginAdmin,
-  changeAdminPassword
+  changeAdminPassword 
 } = require("../controller/adminController");
 
 const router = express.Router();
