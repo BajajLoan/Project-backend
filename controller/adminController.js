@@ -2,6 +2,7 @@ const Admin = require("../model/Admin");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const AdminProfile = require("../model/AdminProfile")
+const Application = require("../model/Application")
 /**
  * REGISTER ADMIN
  */
@@ -116,7 +117,25 @@ exports.changeAdminPassword = async (req, res) => {
   }
 };
 
+exports.getAllApplications = async (req, res) => {
+  try {
+    const applications = await Application.find().sort({ createdAt: -1 });
 
+    res.status(200).json({
+      success: true,
+      count: applications.length,
+      data: applications
+    });
+
+  } catch (error) {
+    console.error("Get Applications Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch applications"
+    });
+  }
+};
 
 
 

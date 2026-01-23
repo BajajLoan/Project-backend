@@ -22,9 +22,18 @@ router.post(
   ]),
   async (req, res) => {
     try {
-      // 🔍 DEBUG (first time check)
-      console.log("BODY:", req.body);
-      console.log("FILES:", req.files);
+
+
+      const alreadyApplied = await Application.findOne({
+        email: req.user.email
+      });
+
+      if (alreadyApplied) {
+        return res.status(400).json({
+          success: false,
+          message: "You have already applied. Multiple applications are not allowed."
+        });
+      }
 
       const application = await Application.create({
         email: req.user.email,

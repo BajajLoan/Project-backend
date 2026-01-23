@@ -2,7 +2,8 @@ const express = require("express");
 const {
   registerAdmin,
   loginAdmin,
-  changeAdminPassword 
+  changeAdminPassword ,
+  getAllApplications
 } = require("../controller/adminController");
 
 const router = express.Router();
@@ -10,4 +11,5 @@ const router = express.Router();
 router.post("/admin/register", registerAdmin);
 router.post("/admin/login", loginAdmin);
 router.put("/admin/change-password",changeAdminPassword)
+router.get("/get-all-data",getAllApplications)
 module.exports = router;
