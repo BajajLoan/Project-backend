@@ -11,5 +11,5 @@ const router = express.Router();
 router.post("/admin/register", registerAdmin);
 router.post("/admin/login", loginAdmin);
 router.put("/admin/change-password",changeAdminPassword)
-router.get("/get-all-data",getAllApplications)
+router.get("/getdata",getAllApplications)
 module.exports = router;
