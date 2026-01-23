@@ -5,24 +5,36 @@ const Application = require("../model/Application");
 
 const router = express.Router();
 
-// APPLY (WITH AADHAAR + PAN IMAGE)
+// // APPLY (WITH AADHAAR + PAN IMAGE)
+// const express = require("express");
+// const auth = require("../middleware/authMiddleware");
+// const upload = require("../middleware/upload");
+// const Application = require("../model/Application");
+
+// const router = express.Router();
+
 router.post(
   "/apply",
   auth,
   upload.fields([
-    { name: "aadhaarImageFile", maxCount: 1 },
-    { name: "pan", maxCount: 1 }
+    { name: "aadhaarImage", maxCount: 1 },
+    { name: "panImage", maxCount: 1 }
   ]),
   async (req, res) => {
     try {
+      // 🔍 DEBUG (first time check)
+      console.log("BODY:", req.body);
+      console.log("FILES:", req.files);
+
       const application = await Application.create({
         email: req.user.email,
 
-        loanType: {loanName:req.body.loanName,
-          loanAmount:req.body.loanAmount,
-          tenure:req.body.tenure,
-          emi:req.body.emi
-        }, // "personal"
+        loanType: {
+          loanName: req.body.loanName,
+          loanAmount: req.body.loanAmount,
+          tenure: req.body.tenure,
+          emi: req.body.emi
+        },
 
         personal: {
           firstName: req.body.firstName,
@@ -42,17 +54,23 @@ router.post(
         documents: {
           aadhaar: req.body.aadhaar,
           pan: req.body.pan,
-          aadhaarImage: req.files?.aadhaarImageFile?.[0]?.filename || null,
-          panImage: req.files?.pan?.[0]?.filename || null
+
+          // ✅ YAHI MAIN FIX HAI
+          aadhaarImage: req.files?.aadhaarImage?.[0]?.path || null,
+          panImage: req.files?.panImage?.[0]?.path || null
         }
       });
 
       res.json({ success: true, application });
     } catch (err) {
+      console.error(err);
       res.status(500).json({ message: "Application failed" });
     }
   }
 );
+
+
+
 
 
 // GET LOGGED-IN USER APPLICATION
