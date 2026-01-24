@@ -32,9 +32,9 @@ router.post("/add-charge", auth, async (req, res) => {
 
 router.put("/charge-approval",  async (req, res) => {
   try {
-    // if (req.user.role !== "admin") {
-    //   return res.status(403).json({ message: "Admin only" });
-    // }
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Admin only" });
+    }
 
     const { applicationId, chargeId, approval } = req.body;
     // approval = 0 or 1
