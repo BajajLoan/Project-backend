@@ -7,9 +7,9 @@ const router = express.Router();
 
 router.post("/add-charge", auth, async (req, res) => {
   try {
-    // if (req.user.role !== "admin") {
-    //   return res.status(403).json({ message: "Admin access denied" });
-    // }
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Admin access denied" });
+    }
 
     const { applicationId, chargeType, loanType, amount } = req.body;
 
