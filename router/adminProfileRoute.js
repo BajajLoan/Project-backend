@@ -17,7 +17,7 @@ const upload = require("../middleware/upload")
 // CONTACT
 router.post("/contact", authMiddleware,adminMiddleware, createAdminContact);
 router.put("/contact", authMiddleware,adminMiddleware, updateAdminContact);
-router.get("/contact", authMiddleware,adminMiddleware, getAdminContact);
+router.get("/contact", authMiddleware, getAdminContact);
 
 // PAYMENT (QR IMAGE UPLOAD)
 router.post(

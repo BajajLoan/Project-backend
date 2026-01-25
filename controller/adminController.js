@@ -200,7 +200,7 @@ exports.updateAdminContact = async (req, res) => {
 exports.getAdminContact = async (req, res) => {
   try {
     const profile = await AdminProfile.findOne(
-      { adminId: req.user.id },
+      {  },
       "contactNumber whatsappNumber email"
     );
 
@@ -295,8 +295,8 @@ exports.updateAdminPayment = async (req, res) => {
 
 exports.getAdminPayment = async (req, res) => {
   try {
-    const profile = await AdminProfile.findOne(
-      { adminId: req.user.id },
+    const profile = await AdminProfile.find(
+      {  },
       "upiId bankName accountNumber ifsc accountHolder qrImage"
     );
 
