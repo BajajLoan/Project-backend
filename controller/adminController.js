@@ -141,58 +141,139 @@ exports.getAllApplications = async (req, res) => {
 
 
 /**
- * CREATE ADMIN PROFILE (ONLY ONCE)
+ *  ADMIN contact details route (ONLY ONCE)
  */
-exports.createAdminProfile = async (req, res) => {
+exports.createAdminContact = async (req, res) => {
   try {
-    const { contactNumber, whatsappNumber, email, image, description } = req.body;
+    const { contactNumber, whatsappNumber, email } = req.body;
 
     if (!contactNumber || !whatsappNumber || !email) {
-      return res.status(400).json({ message: "Required fields missing" });
+      return res.status(400).json({ message: "All fields are required" });
     }
 
-    // check already exists
-    const existingProfile = await AdminProfile.findOne({
-      adminId: req.user.id
-    });
-
-    if (existingProfile) {
-      return res.status(400).json({
-        message: "Admin profile already exists"
-      });
+    const existing = await AdminProfile.findOne({ adminId: req.user.id });
+    if (existing) {
+      return res.status(400).json({ message: "Contact already exists" });
     }
 
     const profile = await AdminProfile.create({
       adminId: req.user.id,
       contactNumber,
       whatsappNumber,
-      email,
-      image,
-      description
+      email
     });
 
     res.status(201).json({
-      message: "Admin profile created successfully",
+      message: "Admin contact created",
       profile
     });
-
   } catch (err) {
-    res.status(500).json({ message: "Profile creation failed" });
+    res.status(500).json({ message: "Contact creation failed" });
   }
 };
 
 
-/**
- * CREATE or UPDATE ADMIN PROFILE
- */
-/**
- * UPDATE ADMIN PROFILE
- */
-exports.updateAdminProfile = async (req, res) => {
+exports.updateAdminContact = async (req, res) => {
   try {
+    const { contactNumber, whatsappNumber, email } = req.body;
+
     const profile = await AdminProfile.findOneAndUpdate(
       { adminId: req.user.id },
-      req.body,
+      { contactNumber, whatsappNumber, email },
+      { new: true }
+    );
+
+    if (!profile) {
+      return res.status(404).json({ message: "Contact not found" });
+    }
+
+    res.json({
+      message: "Admin contact updated",
+      profile
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Contact update failed" });
+  }
+};
+
+
+exports.getAdminContact = async (req, res) => {
+  try {
+    const profile = await AdminProfile.findOne(
+      { adminId: req.user.id },
+      "contactNumber whatsappNumber email"
+    );
+
+    if (!profile) {
+      return res.status(404).json({ message: "Contact not found" });
+    }
+
+    res.json(profile);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch contact" });
+  }
+};
+
+
+
+// admin payment route 
+
+exports.createAdminPayment = async (req, res) => {
+  try {
+    const {
+      upiId,
+      bankName,
+      accountNumber,
+      ifscCode,
+      accountHolderName
+    } = req.body;
+
+    // ✅ SAME PATTERN AS /apply ROUTE
+    const qrImage = req.files?.qrImage?.[0]?.path || null;
+
+    const profile = await AdminProfile.findOneAndUpdate(
+      { adminId: req.user.id },
+      {
+        payment: {
+          upiId,
+          bankName,
+          accountNumber,
+          ifscCode,
+          accountHolderName,
+          qrImage
+        }
+      },
+      { new: true, upsert: true }
+    );
+
+    res.status(201).json({
+      success: true,
+      message: "Payment details saved",
+      profile
+    });
+
+  } catch (err) {
+    console.error("Admin payment error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to save payment details"
+    });
+  }
+};
+
+
+
+exports.updateAdminPayment = async (req, res) => {
+  try {
+    const updateData = req.body;
+
+    if (req.file) {
+      updateData.qrImage = req.file.path;
+    }
+
+    const profile = await AdminProfile.findOneAndUpdate(
+      { adminId: req.user.id },
+      { payment: updateData },
       { new: true }
     );
 
@@ -201,29 +282,30 @@ exports.updateAdminProfile = async (req, res) => {
     }
 
     res.json({
-      message: "Profile updated successfully",
+      message: "Payment updated successfully",
       profile
     });
 
   } catch (err) {
-    res.status(500).json({ message: "Profile update failed" });
+    res.status(500).json({ message: "Failed to update payment" });
   }
 };
 
-/**
- * GET ADMIN PROFILE
- */
-exports.getAdminProfile = async (req, res) => {
+
+
+exports.getAdminPayment = async (req, res) => {
   try {
-    const profile = await AdminProfile.findOne({ adminId: req.user.id });
+    const profile = await AdminProfile.findOne(
+      { adminId: req.user.id },
+      "upiId bankName accountNumber ifsc accountHolder qrImage"
+    );
 
     if (!profile) {
-      return res.status(404).json({ message: "Profile not found" });
+      return res.status(404).json({ message: "Payment details not found" });
     }
 
     res.json(profile);
-
   } catch (err) {
-    res.status(500).json({ message: "Failed to fetch profile" });
+    res.status(500).json({ message: "Failed to fetch payment details" });
   }
 };
