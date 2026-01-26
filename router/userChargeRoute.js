@@ -6,7 +6,7 @@ const upload = require("../middleware/upload");
 
 const router = express.Router();
 
-router.post("/user/payment", auth, upload.fields([
+router.put("/user/payment", auth, upload.fields([
     { name: "paymentImage", maxCount: 1 }
   ]), async (req, res) => {
   try {
