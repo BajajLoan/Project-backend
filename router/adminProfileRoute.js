@@ -32,7 +32,9 @@ router.post(
 router.put(
   "/payment",
   authMiddleware,adminMiddleware,
-  upload.single("qrImage"),
+  upload.fields([
+    { name: "qrImage", maxCount: 1 }
+  ]),
   updateAdminPayment
 );
 

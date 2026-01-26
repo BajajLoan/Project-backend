@@ -224,36 +224,36 @@ exports.createAdminPayment = async (req, res) => {
       upiId,
       bankName,
       accountNumber,
-      ifscCode,
-      accountHolderName
+      ifsc,
+      accountHolder
     } = req.body;
 
-    // ✅ SAME PATTERN AS /apply ROUTE
-    const qrImage = req.files?.qrImage?.[0]?.path || null;
+    // ✅ multer (same upload.js) – field name: qrImage
+    const qrImage = req.files?.qrImage
+      ? req.files.qrImage[0].path
+      : null;
 
     const profile = await AdminProfile.findOneAndUpdate(
       { adminId: req.user.id },
       {
-        payment: {
-          upiId,
-          bankName,
-          accountNumber,
-          ifscCode,
-          accountHolderName,
-          qrImage
-        }
+            upiId,
+            bankName,
+            accountNumber,
+            ifsc,
+            accountHolder,
+            qrImage
       },
       { new: true, upsert: true }
     );
 
     res.status(201).json({
       success: true,
-      message: "Payment details saved",
-      profile
+      message: "Payment details saved successfully",
+      payment: profile.payment
     });
 
   } catch (err) {
-    console.error("Admin payment error:", err);
+    console.error("Admin payment create error:", err);
     res.status(500).json({
       success: false,
       message: "Failed to save payment details"
@@ -265,15 +265,37 @@ exports.createAdminPayment = async (req, res) => {
 
 exports.updateAdminPayment = async (req, res) => {
   try {
-    const updateData = req.body;
+    const {
+      upiId,
+      bankName,
+      accountNumber,
+      ifsc,
+      accountHolder
+    } = req.body;
 
-    if (req.file) {
-      updateData.qrImage = req.file.path;
-    }
+    // const updatePayment = {
+    //   upiId,
+    //   bankName,
+    //   accountNumber,
+    //   ifscCode,
+    //   accountHolderName
+    // };
+
+    // ✅ image optional
+    const qrImage = req.files?.qrImage
+      ? req.files.qrImage[0].path
+      : null;
 
     const profile = await AdminProfile.findOneAndUpdate(
       { adminId: req.user.id },
-      { payment: updateData },
+      { 
+            upiId,
+            bankName,
+            accountNumber,
+            ifsc,
+            accountHolder,
+            qrImage
+       },
       { new: true }
     );
 
@@ -282,12 +304,17 @@ exports.updateAdminPayment = async (req, res) => {
     }
 
     res.json({
+      success: true,
       message: "Payment updated successfully",
-      profile
+      payment: profile.payment
     });
 
   } catch (err) {
-    res.status(500).json({ message: "Failed to update payment" });
+    console.error("Admin payment update error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update payment"
+    });
   }
 };
 
