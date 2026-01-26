@@ -7,12 +7,12 @@ const upload = require("../middleware/upload");
 const router = express.Router();
 
 router.put("/user/payment", auth, upload.fields([
-    { name: "paymentImage", maxCount: 1 }
+    { name: "image", maxCount: 1 }
   ]), async (req, res) => {
   try {
     const { applicationId, chargeId } = req.body;
-    const paymentImage = req.files?.paymentImage
-      ? req.files.paymentImage[0].path
+    const image = req.files?.image
+      ? req.files.image[0].path
       : null;
     const app = await Application.findById(applicationId);
     if (!app) {
@@ -24,11 +24,11 @@ router.put("/user/payment", auth, upload.fields([
       return res.status(404).json({ message: "Charge not found" });
     }
 
-    if (charge.paymentImage) {
+    if (charge.image) {
       return res.status(400).json({ message: "Image already uploaded" });
     }
 
-    charge.paymentImage = paymentImage;
+    charge.image = image;
     await app.save();
 
     res.json({ message: "Image uploaded successfully" });
