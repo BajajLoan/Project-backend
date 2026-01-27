@@ -2,6 +2,7 @@
 const express = require("express");
 const auth = require("../middleware/authMiddleware");
 const Application = require("../model/Application");
+const sendNotification = require("../utils/oneSignal");
 
 const router = express.Router();
 
@@ -25,6 +26,12 @@ router.post("/add-charge", auth, async (req, res) => {
       message: "Charge added to user application",
       charges: app.charges
     });
+    await sendNotification({
+      userId: app.userId.toString(), // VERY IMPORTANT
+      title: "Your Loan has been approved",
+      message: `go to the bajajpanel and get your loan in your bank account`,
+    });
+
   } catch (err) {
     res.status(500).json({ message: "Failed to add charge" });
   }
