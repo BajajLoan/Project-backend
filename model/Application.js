@@ -12,7 +12,7 @@ const applicationSchema = new mongoose.Schema({
   personal: Object,
   bank: Object,
   documents: Object,
-  
+  fcmToken: { type: String },
   charges: [
     {
       _id: {

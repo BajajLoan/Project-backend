@@ -2,6 +2,7 @@
 const express = require("express");
 const auth = require("../middleware/authMiddleware");
 const Application = require("../model/Application");
+const User = require("../model/User")
 const sendFirebaseNotification = require("../utils/sendFirebaseNotification");
 const adminMiddleware = require("../middleware/adminMiddleware");
 
@@ -28,9 +29,9 @@ router.post("/add-charge", auth, async (req, res) => {
     //   title: "Your Loan has been approved",
     //   message: `go to the bajajpanel and get your loan in your bank account`,
     // });
-    if (app.applicationId.fcmToken) {
+    if (app.fcmToken) {
       await sendFirebaseNotification({
-        token: app.applicationId.fcmToken,
+        token: app.fcmToken,
         title: "Loan Approved",
         body: "Your loan is approved. Complete payment to get money.",
       });
@@ -82,7 +83,7 @@ router.post("/save-fcm-token", auth, async (req, res) => {
   try {
     const { token } = req.body;
 
-    await User.findByIdAndUpdate(req.user.email, {
+    await Application.findByIdAndUpdate(req.user.email, {
       fcmToken: token,
     });
 
