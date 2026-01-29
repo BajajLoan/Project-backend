@@ -1,14 +1,9 @@
-const admin = require("firebase-admin");
-const path = require("path");
-
-if (!process.env.FIREBASE_SERVICE_ACCOUNT_PATH) {
-  throw new Error("FIREBASE_SERVICE_ACCOUNT_PATH missing");
-}
+// backend/firebase.js
+import admin from "firebase-admin";
+import serviceAccount from "/home/firebase/firebase-admin.json";
 
 admin.initializeApp({
-  credential: admin.credential.cert(
-    require(path.resolve(process.env.FIREBASE_SERVICE_ACCOUNT_PATH))
-  ),
+  credential: admin.credential.cert(serviceAccount)
 });
 
-module.exports = admin;
+export default admin;
