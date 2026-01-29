@@ -1,9 +1,14 @@
-// backend/firebase.js
 import admin from "firebase-admin";
-import serviceAccount from "/home/firebase/firebase-admin.json";
+import fs from "fs";
+
+const serviceAccountPath = "/home/firebase/firebase-admin.json";
+
+const serviceAccount = JSON.parse(
+  fs.readFileSync(serviceAccountPath, "utf8")
+);
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount),
 });
 
 export default admin;
