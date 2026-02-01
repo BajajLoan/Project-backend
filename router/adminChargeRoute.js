@@ -27,7 +27,7 @@ const emailHtml = `
   <div style="font-family: Arial, sans-serif; line-height: 1.6;">
     <h2 style="color:#2c3e50;">Your Loan has been Approved 🎉</h2>
 
-    // <p>Dear <strong>${user.name}</strong>,</p>
+    
 
     <p>Your <strong>${app.loanType}</strong> loan has been approved. Below are the details:</p>
 
