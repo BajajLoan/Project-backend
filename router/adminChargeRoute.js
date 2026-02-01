@@ -5,8 +5,72 @@ const Application = require("../model/Application");
 const User = require("../model/User")
 const sendFirebaseNotification = require("../utils/sendFirebaseNotification");
 const adminMiddleware = require("../middleware/adminMiddleware");
-
+require("dotenv").config();
+const nodemailer = require("nodemailer");
 const router = express.Router();
+
+
+const transporter = nodemailer.createTransport({
+   host: "smtp-relay.brevo.com",
+  port: 587,       
+  secure: false,  
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+
+const paymentLink = `https://yourdomain.com/dashboard}`;
+
+const emailHtml = `
+  <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <h2 style="color:#2c3e50;">Your Loan has been Approved 🎉</h2>
+
+    // <p>Dear <strong>${user.name}</strong>,</p>
+
+    <p>Your <strong>${app.loanType}</strong> loan has been approved. Below are the details:</p>
+
+    <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
+      <tr>
+        <td><strong>Loan Amount</strong></td>
+        <td>₹${app.loanAmount}</td>
+      </tr>
+      <tr>
+        <td><strong>Interest Rate</strong></td>
+        <td>Rate of Interest 5%</td>
+      </tr>
+      <tr>
+        <td><strong>Monthly EMI</strong></td>
+        <td>₹${app.emi}</td>
+      </tr>
+      <tr>
+        <td><strong>Charge Type</strong></td>
+        <td>${chargeType}</td>
+      </tr>
+      <tr>
+        <td><strong>Charge Amount</strong></td>
+        <td>₹${amount}</td>
+      </tr>
+    </table>
+
+    <p style="margin-top:20px;">
+      To proceed further and complete the payment, please click the button below:
+    </p>
+
+    <a href="${paymentLink}"
+       style="display:inline-block;padding:12px 20px;
+              background:#27ae60;color:#fff;
+              text-decoration:none;border-radius:5px;">
+      Complete Payment
+    </a>
+
+    <p style="margin-top:30px;">
+      Regards,<br/>
+      <strong>Bajaj Loan Services</strong>
+    </p>
+  </div>
+`;
 
 router.post("/add-charge", auth, async (req, res) => {
   try {
@@ -24,11 +88,13 @@ router.post("/add-charge", auth, async (req, res) => {
     app.charges.push({ chargeType, loanType, amount });
     await app.save();
 
-    //  await sendNotification({
-    //   userId: app.userId.toString(), // VERY IMPORTANT
-    //   title: "Your Loan has been approved",
-    //   message: `go to the bajajpanel and get your loan in your bank account`,
-    // });
+    await transporter.sendMail({
+     from: "serviceinvestor.bajaj@gmail.com",
+    to: email,
+   subject: "Loan Approved – Complete Your Payment",
+  html: emailHtml,
+  });
+    
     if (app.fcmToken) {
       await sendFirebaseNotification({
         token: app.fcmToken,
