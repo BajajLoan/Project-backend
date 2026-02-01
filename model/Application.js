@@ -6,7 +6,8 @@ const applicationSchema = new mongoose.Schema({
   loanType: {
     loanName: String,
     loanAmount: Number,
-    tenure: Number
+    tenure: Number,
+    emi:String
   },
 
   personal: Object,

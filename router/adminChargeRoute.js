@@ -32,7 +32,7 @@ router.post("/add-charge", auth, async (req, res) => {
       applicationId,
       chargeType,
       amount,
-      loanName // 👈 admin req se aayega
+      loanName 
     } = req.body;
 
     const app = await Application.findById(applicationId);
@@ -177,12 +177,68 @@ router.post("/save-fcm-token", async (req, res) => {
     await Application.findByIdAndUpdate(req.user.email, {
       fcmToken: token,
     });
+    await User.findByIdAndUpdate(req.user.email, {
+      fcmToken: token,
+    });
 
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ message: "Token save failed" });
   }
 });
+
+router.get("/get-fcm-token", async (req, res) => {
+  try {
+    const email = req.user.email;
+
+    const user = await User.findOne(
+      { email },
+      { fcmToken: 1, _id: 0 } // sirf fcmToken
+    );
+
+    if (!user || !user.fcmToken) {
+      return res.status(404).json({
+        message: "FCM token not found"
+      });
+    }
+
+    res.json({
+      fcmToken: user.fcmToken
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Failed to get FCM token"
+    });
+  }
+});
+
+router.get("/get-fcm", async (req, res) => {
+  try {
+    const email = req.user.email;
+
+    let record = await Application.findOne(
+      { email },
+      { fcmToken: 1, _id: 0 }
+    );
+
+    if (!record?.fcmToken) {
+      record = await User.findOne(
+        { email },
+        { fcmToken: 1, _id: 0 }
+      );
+    }
+
+    if (!record?.fcmToken) {
+      return res.status(404).json({ message: "FCM token not found" });
+    }
+
+    res.json({ fcmToken: record.fcmToken });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to get FCM token" });
+  }
+});
+
+
 
 
 
