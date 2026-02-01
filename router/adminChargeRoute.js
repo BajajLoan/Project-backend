@@ -29,12 +29,12 @@ const emailHtml = `
 
     
 
-    <p>Your <strong>${app.loanType}</strong> loan has been approved. Below are the details:</p>
+    <p>Your <strong>${app.loanType.loanName}</strong> loan has been approved. Below are the details:</p>
 
     <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
       <tr>
         <td><strong>Loan Amount</strong></td>
-        <td>₹${app.loanAmount}</td>
+        <td>₹${app.loanType.loanAmount}</td>
       </tr>
       <tr>
         <td><strong>Interest Rate</strong></td>
