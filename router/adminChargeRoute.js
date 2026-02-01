@@ -170,7 +170,7 @@ router.put("/charge-approval",adminMiddleware,  async (req, res) => {
 
 
 //send notification
-router.post("/save-fcm-token", auth, async (req, res) => {
+router.post("/save-fcm-token", async (req, res) => {
   try {
     const { token } = req.body;
 
