@@ -138,7 +138,7 @@ router.post("/add-charge", auth, async (req, res) => {
 });
 
 
-router.put("/charge-approval",adminMiddleware,  async (req, res) => {
+router.put("/charge-approval",auth,  async (req, res) => {
   try {
    
 
