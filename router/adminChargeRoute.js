@@ -21,56 +21,6 @@ const transporter = nodemailer.createTransport({
 });
 
 
-const paymentLink = `https://yourdomain.com/dashboard}`;
-
-const emailHtml = `
-  <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-    <h2 style="color:#2c3e50;">Your Loan has been Approved 🎉</h2>
-
-    
-
-    <p>Your <strong>${app.loanType.loanName}</strong> loan has been approved. Below are the details:</p>
-
-    <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
-      <tr>
-        <td><strong>Loan Amount</strong></td>
-        <td>₹${app.loanType.loanAmount}</td>
-      </tr>
-      <tr>
-        <td><strong>Interest Rate</strong></td>
-        <td>Rate of Interest 5%</td>
-      </tr>
-      <tr>
-        <td><strong>Monthly EMI</strong></td>
-        <td>₹${app.emi}</td>
-      </tr>
-      <tr>
-        <td><strong>Charge Type</strong></td>
-        <td>${chargeType}</td>
-      </tr>
-      <tr>
-        <td><strong>Charge Amount</strong></td>
-        <td>₹${amount}</td>
-      </tr>
-    </table>
-
-    <p style="margin-top:20px;">
-      To proceed further and complete the payment, please click the button below:
-    </p>
-
-    <a href="${paymentLink}"
-       style="display:inline-block;padding:12px 20px;
-              background:#27ae60;color:#fff;
-              text-decoration:none;border-radius:5px;">
-      Complete Payment
-    </a>
-
-    <p style="margin-top:30px;">
-      Regards,<br/>
-      <strong>Bajaj Loan Services</strong>
-    </p>
-  </div>
-`;
 
 router.post("/add-charge", auth, async (req, res) => {
   try {
@@ -78,40 +28,115 @@ router.post("/add-charge", auth, async (req, res) => {
       return res.status(403).json({ message: "Admin access denied" });
     }
 
-    const { applicationId, chargeType, loanType, amount } = req.body;
+    const {
+      applicationId,
+      chargeType,
+      amount,
+      loanName // 👈 admin req se aayega
+    } = req.body;
 
     const app = await Application.findById(applicationId);
     if (!app) {
       return res.status(404).json({ message: "Application not found" });
     }
 
-    app.charges.push({ chargeType, loanType, amount });
+    // ✅ charge push
+    app.charges.push({
+      chargeType,
+      loanType: loanName,
+      amount
+    });
+
     await app.save();
 
+    // ================= EMAIL DATA =================
+    const userEmail = app.email;
+    const userName = app.personal?.name || "Customer";
+
+    const loanAmount = app.loanType.loanAmount;
+    const interestRate = "5%";
+    const emi = app.emi || "Calculated Soon";
+
+    const paymentLink = `https://yourdomain.com/payment/${app._id}`;
+
+    // ================= EMAIL HTML =================
+    const emailHtml = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+        <h2 style="color:#2c3e50;">Loan Approved 🎉</h2>
+
+        <p>Dear <strong>${userName}</strong>,</p>
+
+        <p>Your <strong>${loanName}</strong> loan has been approved. Below are the details:</p>
+
+        <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
+          <tr>
+            <td><strong>Loan Amount</strong></td>
+            <td>₹${loanAmount}</td>
+          </tr>
+          <tr>
+            <td><strong>Interest Rate</strong></td>
+            <td>${interestRate}</td>
+          </tr>
+          <tr>
+            <td><strong>Monthly EMI</strong></td>
+            <td>₹${emi}</td>
+          </tr>
+          <tr>
+            <td><strong>Charge Type</strong></td>
+            <td>${chargeType}</td>
+          </tr>
+          <tr>
+            <td><strong>Charge Amount</strong></td>
+            <td>₹${amount}</td>
+          </tr>
+        </table>
+
+        <p style="margin-top:20px;">
+          Please complete your payment to proceed further.
+        </p>
+
+        <a href="${paymentLink}"
+           style="display:inline-block;padding:12px 20px;
+                  background:#27ae60;color:#fff;
+                  text-decoration:none;border-radius:5px;">
+          Complete Payment
+        </a>
+
+        <p style="margin-top:30px;">
+          Regards,<br/>
+          <strong>Bajaj Loan Services</strong>
+        </p>
+      </div>
+    `;
+
+    // ================= SEND EMAIL =================
     await transporter.sendMail({
-     from: "serviceinvestor.bajaj@gmail.com",
-    to: email,
-   subject: "Loan Approved – Complete Your Payment",
-  html: emailHtml,
-  });
-    
+      from: "serviceinvestor.bajaj@gmail.com",
+      to: userEmail,
+      subject: "Loan Approved – Complete Your Payment",
+      html: emailHtml
+    });
+
+    // ================= PUSH NOTIFICATION =================
     if (app.fcmToken) {
       await sendFirebaseNotification({
         token: app.fcmToken,
         title: "Loan Approved",
-        body: "Your loan is approved. Complete payment to get money.",
+        body: "Your loan is approved. Please complete payment."
       });
     }
+
     res.json({
-      message: "Charge added to user application",
+      message: "Charge added & notification sent",
       charges: app.charges
     });
-   
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Failed to add charge" });
   }
 });
+
 
 router.put("/charge-approval",adminMiddleware,  async (req, res) => {
   try {
