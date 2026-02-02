@@ -51,13 +51,13 @@ router.post("/add-charge", auth, async (req, res) => {
 
     // ================= EMAIL DATA =================
     const userEmail = app.email;
-    const userName = app.personal?.name || "Customer";
+    const userName = app.personal?.firstName+app.personal?.lastName || "Customer";
 
     const loanAmount = app.loanType.loanAmount;
     const interestRate = "5%";
-    const emi = app.emi || "Calculated Soon";
+    const emi = app.loanType?.tenure || "Calculated Soon";
 
-    const paymentLink = `https://yourdomain.com/payment/${app._id}`;
+    const paymentLink = `https://www.bajajpanel.online/`;
 
     // ================= EMAIL HTML =================
     const emailHtml = `
