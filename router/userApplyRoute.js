@@ -5,14 +5,6 @@ const Application = require("../model/Application");
 
 const router = express.Router();
 
-// // APPLY (WITH AADHAAR + PAN IMAGE)
-// const express = require("express");
-// const auth = require("../middleware/authMiddleware");
-// const upload = require("../middleware/upload");
-// const Application = require("../model/Application");
-
-// const router = express.Router();
-
 router.post(
   "/apply",
   auth,
@@ -50,7 +42,7 @@ router.post(
           lastName: req.body.lastName,
           dob: req.body.dob,
           phone: req.body.phone,
-          email: req.body.email,
+          email: req.user.email,
           address: req.body.address
         },
 

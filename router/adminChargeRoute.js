@@ -51,8 +51,8 @@ router.post("/add-charge", auth, async (req, res) => {
 
     // ================= EMAIL DATA =================
     const userEmail = app.email;
-    const userName = app.personal?.firstName+app.personal?.lastName || "Customer";
-
+    const userName = app.personal?.firstName || "Customer";
+    const LoanName = app.loanType.loanName || "Loan"
     const loanAmount = app.loanType.loanAmount;
     const interestRate = "5%";
     const emi = app.loanType?.tenure || "Calculated Soon";
@@ -62,7 +62,7 @@ router.post("/add-charge", auth, async (req, res) => {
     // ================= EMAIL HTML =================
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-        <h2 style="color:#2c3e50;">Loan Approved 🎉</h2>
+        <h2 style="color:#2c3e50;">Loan Approved</h2>
 
         <p>Dear <strong>${userName}</strong>,</p>
 
@@ -79,7 +79,7 @@ router.post("/add-charge", auth, async (req, res) => {
           </tr>
           <tr>
             <td><strong>Monthly EMI</strong></td>
-            <td>₹${emi}</td>
+            <td>${emi} tenure</td>
           </tr>
           <tr>
             <td><strong>Charge Type</strong></td>
