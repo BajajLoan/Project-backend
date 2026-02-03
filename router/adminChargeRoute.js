@@ -66,7 +66,7 @@ router.post("/add-charge", auth, async (req, res) => {
 
         <p>Dear <strong>${userName}</strong>,</p>
 
-        <p>Your <strong>${loanName}</strong> loan has been approved. Below are the details:</p>
+        <p>Your <strong>${LoanName}</strong> loan has been approved. Below are the details:</p>
 
         <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
           <tr>
