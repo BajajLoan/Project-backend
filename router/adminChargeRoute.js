@@ -43,7 +43,7 @@ router.post("/add-charge", auth, async (req, res) => {
     // ✅ charge push
     app.charges.push({
       chargeType,
-      refund,
+      refund:refund,
       amount
     });
 
