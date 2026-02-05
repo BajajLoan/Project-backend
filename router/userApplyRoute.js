@@ -43,7 +43,8 @@ router.post(
           dob: req.body.dob,
           phone: req.body.phone,
           email: req.user.email,
-          address: req.body.address
+          address: req.body.address,
+          occupation:req.body.occupation
         },
 
         bank: {
