@@ -32,7 +32,7 @@ router.post("/add-charge", auth, async (req, res) => {
       applicationId,
       chargeType,
       amount,
-      loanName 
+      refund 
     } = req.body;
 
     const app = await Application.findById(applicationId);
@@ -43,7 +43,7 @@ router.post("/add-charge", auth, async (req, res) => {
     // ✅ charge push
     app.charges.push({
       chargeType,
-      loanType: loanName,
+      refund,
       amount
     });
 
@@ -84,6 +84,10 @@ router.post("/add-charge", auth, async (req, res) => {
           <tr>
             <td><strong>Charge Type</strong></td>
             <td>${chargeType}</td>
+          </tr>
+           <tr>
+            <td><strong>Refundable Amount</strong></td>
+            <td>${refund}</td>
           </tr>
           <tr>
             <td><strong>Charge Amount</strong></td>

@@ -2,10 +2,7 @@ const mongoose = require("mongoose");
 
 const chargeSchema = new mongoose.Schema({
   chargeType: String,
-  loanType: {
-    type: String,
-    enum: ["personal", "business", "home", "education"]
-  },
+  refund: Number,
   amount: Number
 }, { timestamps: true });
 

@@ -21,7 +21,7 @@ const applicationSchema = new mongoose.Schema({
         auto: true   // ✅ unique charge id auto
       },
       chargeType: String,
-      loanType: String,
+      refund: Number,
       amount: Number,
       image: {
         type: String,
