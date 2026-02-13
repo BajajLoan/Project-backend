@@ -84,7 +84,6 @@ router.delete("/apply", async (req, res) => {
 
     const application = await Application.findOneAndDelete({
       _id: applicationId,
-      email: req.user.email  // security
     });
 
     if (!application) {
