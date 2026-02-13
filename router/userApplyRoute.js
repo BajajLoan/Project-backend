@@ -71,16 +71,26 @@ router.post(
   }
 );
 
-router.delete("/apply", async (req, res) => {
+router.delete("/apply", auth, async (req, res) => {
   try {
+    const { applicationId } = req.body;
+
+    if (!applicationId) {
+      return res.status(400).json({
+        success: false,
+        message: "Application ID is required"
+      });
+    }
+
     const application = await Application.findOneAndDelete({
-      email: req.user.email
+      _id: applicationId,
+      email: req.user.email  // security
     });
 
     if (!application) {
       return res.status(404).json({
         success: false,
-        message: "Application not found"
+        message: "Application not found or unauthorized"
       });
     }
 
@@ -93,6 +103,7 @@ router.delete("/apply", async (req, res) => {
     res.status(500).json({ message: "Delete failed" });
   }
 });
+
 
 
 router.put(
