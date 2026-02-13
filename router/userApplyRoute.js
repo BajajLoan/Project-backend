@@ -113,9 +113,16 @@ router.put(
   ]),
   async (req, res) => {
     try {
-      const application = await Application.findOne({
-        email: req.user.email
-      });
+      const { applicationId } = req.body;
+
+      if (!applicationId) {
+        return res.status(400).json({
+          success: false,
+          message: "Application ID is required"
+        });
+      }
+
+      const application = await Application.findById(applicationId);
 
       if (!application) {
         return res.status(404).json({
@@ -126,6 +133,7 @@ router.put(
 
       // Loan Update
       application.loanType = {
+        ...application.loanType,
         loanName: req.body.loanName || application.loanType.loanName,
         loanAmount: req.body.loanAmount || application.loanType.loanAmount,
         tenure: req.body.tenure || application.loanType.tenure,
@@ -139,12 +147,14 @@ router.put(
         lastName: req.body.lastName || application.personal.lastName,
         dob: req.body.dob || application.personal.dob,
         phone: req.body.phone || application.personal.phone,
-        address: req.body.address || application.personal.address,
-        occupation: req.body.occupation || application.personal.occupation
+        email: req.body.email || application.personal.email,
+        occupation: req.body.occupation || application.personal.occupation,
+        address: req.body.address || application.personal.address
       };
 
       // Bank Update
       application.bank = {
+        ...application.bank,
         accountHolder: req.body.accountHolder || application.bank.accountHolder,
         accountNumber: req.body.accountNumber || application.bank.accountNumber,
         ifsc: req.body.ifsc || application.bank.ifsc
@@ -171,11 +181,12 @@ router.put(
         application
       });
     } catch (err) {
-      console.error(err);
+      console.error("UPDATE ERROR:", err);
       res.status(500).json({ message: "Update failed" });
     }
   }
 );
+
 
 
 
