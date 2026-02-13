@@ -71,7 +71,7 @@ router.post(
   }
 );
 
-router.delete("/apply", auth, async (req, res) => {
+router.delete("/apply", async (req, res) => {
   try {
     const { applicationId } = req.body;
 
