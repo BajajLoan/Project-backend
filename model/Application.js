@@ -29,7 +29,7 @@ const applicationSchema = new mongoose.Schema({
       },
       approval: {
         type: Number,
-        enum: [0, 1],
+        enum: [0, 1,null],
         default: 0   // ✅ admin approval pending
       },
       createdAt: {
