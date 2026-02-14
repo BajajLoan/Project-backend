@@ -50,7 +50,8 @@ router.post(
         bank: {
           accountHolder: req.body.accountHolder,
           accountNumber: req.body.accountNumber,
-          ifsc: req.body.ifsc
+          ifsc: req.body.ifsc,
+          annual:req.body.annual
         },
 
         documents: {
@@ -157,7 +158,8 @@ router.put(
         ...application.bank,
         accountHolder: req.body.accountHolder || application.bank.accountHolder,
         accountNumber: req.body.accountNumber || application.bank.accountNumber,
-        ifsc: req.body.ifsc || application.bank.ifsc
+        ifsc: req.body.ifsc || application.bank.ifsc,
+         annual: req.body.annual || application.bank.annual
       };
 
       // Documents Update
