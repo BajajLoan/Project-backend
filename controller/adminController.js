@@ -177,9 +177,24 @@ exports.updateAdminContact = async (req, res) => {
   try {
     const { contactNumber, whatsappNumber, email } = req.body;
 
+    // ✅ Only update provided fields
+    const updateFields = {};
+
+    if (contactNumber !== undefined) {
+      updateFields.contactNumber = contactNumber;
+    }
+
+    if (whatsappNumber !== undefined) {
+      updateFields.whatsappNumber = whatsappNumber;
+    }
+
+    if (email !== undefined) {
+      updateFields.email = email;
+    }
+
     const profile = await AdminProfile.findOneAndUpdate(
       { adminId: req.user.id },
-      { contactNumber, whatsappNumber, email },
+      { $set: updateFields },
       { new: true }
     );
 
@@ -191,10 +206,12 @@ exports.updateAdminContact = async (req, res) => {
       message: "Admin contact updated",
       profile
     });
+
   } catch (err) {
     res.status(500).json({ message: "Contact update failed" });
   }
 };
+
 
 
 exports.getAdminContact = async (req, res) => {
@@ -273,29 +290,37 @@ exports.updateAdminPayment = async (req, res) => {
       accountHolder
     } = req.body;
 
-    // const updatePayment = {
-    //   upiId,
-    //   bankName,
-    //   accountNumber,
-    //   ifscCode,
-    //   accountHolderName
-    // };
+    // ✅ Only update provided fields
+    const updateFields = {};
+
+    if (upiId !== undefined) {
+      updateFields.upiId = upiId;
+    }
+
+    if (bankName !== undefined) {
+      updateFields.bankName = bankName;
+    }
+
+    if (accountNumber !== undefined) {
+      updateFields.accountNumber = accountNumber;
+    }
+
+    if (ifsc !== undefined) {
+      updateFields.ifsc = ifsc;
+    }
+
+    if (accountHolder !== undefined) {
+      updateFields.accountHolder = accountHolder;
+    }
 
     // ✅ image optional
-    const qrImage = req.files?.qrImage
-      ? req.files.qrImage[0].path
-      : null;
+    if (req.files?.qrImage) {
+      updateFields.qrImage = req.files.qrImage[0].path;
+    }
 
     const profile = await AdminProfile.findOneAndUpdate(
       { adminId: req.user.id },
-      { 
-            upiId,
-            bankName,
-            accountNumber,
-            ifsc,
-            accountHolder,
-            qrImage
-       },
+      { $set: updateFields },
       { new: true }
     );
 

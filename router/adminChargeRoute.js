@@ -20,6 +20,88 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+router.put("/update-charge", auth, async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Admin access denied" });
+    }
+
+    const {
+      applicationId,
+      chargeId,
+      chargeType,
+      amount,
+      refund
+    } = req.body;
+
+    const app = await Application.findById(applicationId);
+
+    if (!app) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+
+    const charge = app.charges.id(chargeId);
+
+    if (!charge) {
+      return res.status(404).json({ message: "Charge not found" });
+    }
+
+    // ✅ Update fields
+    charge.chargeType = chargeType ?? charge.chargeType;
+    charge.amount = amount ?? charge.amount;
+    charge.refund = refund ?? charge.refund;
+
+    await app.save();
+
+    res.json({
+      message: "Charge updated successfully",
+      charges: app.charges
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to update charge" });
+  }
+});
+
+
+router.delete("/delete-charge", auth, async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Admin access denied" });
+    }
+
+    const { applicationId, chargeId } = req.body;
+
+    const app = await Application.findById(applicationId);
+
+    if (!app) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+
+    const charge = app.charges.id(chargeId);
+
+    if (!charge) {
+      return res.status(404).json({ message: "Charge not found" });
+    }
+
+    // ✅ Remove charge
+    charge.deleteOne();   // (Mongoose subdocument remove)
+
+    await app.save();
+
+    res.json({
+      message: "Charge deleted successfully",
+      charges: app.charges
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to delete charge" });
+  }
+});
+
+
 
 
 router.post("/add-charge", auth, async (req, res) => {
