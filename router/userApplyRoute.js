@@ -198,7 +198,7 @@ router.get("/user-detail", auth, async (req, res) => {
   try {
     const applications = await Application.find({
       email: req.user.email
-    });
+    }).sort({ createdAt: -1 });
 
     if (!applications.length) {
       return res.status(404).json({ message: "No application found" });
