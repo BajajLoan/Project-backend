@@ -22,10 +22,6 @@ const transporter = nodemailer.createTransport({
 
 router.put("/update-charge", auth, async (req, res) => {
   try {
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Admin access denied" });
-    }
-
     const {
       applicationId,
       chargeId,
