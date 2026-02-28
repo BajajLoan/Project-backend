@@ -290,32 +290,35 @@ exports.updateAdminPayment = async (req, res) => {
       accountHolder
     } = req.body;
 
-    // ✅ Only update provided fields
     const updateFields = {};
 
-    if (upiId !== undefined) {
-      updateFields.upiId = upiId;
-    }
+    // 🔐 Only update if value exists AND not empty
+    if (upiId && upiId.trim() !== "")
+      updateFields.upiId = upiId.trim();
 
-    if (bankName !== undefined) {
-      updateFields.bankName = bankName;
-    }
+    if (bankName && bankName.trim() !== "")
+      updateFields.bankName = bankName.trim();
 
-    if (accountNumber !== undefined) {
-      updateFields.accountNumber = accountNumber;
-    }
+    if (accountNumber && accountNumber.trim() !== "")
+      updateFields.accountNumber = accountNumber.trim();
 
-    if (ifsc !== undefined) {
-      updateFields.ifsc = ifsc;
-    }
+    if (ifsc && ifsc.trim() !== "")
+      updateFields.ifsc = ifsc.trim();
 
-    if (accountHolder !== undefined) {
-      updateFields.accountHolder = accountHolder;
-    }
+    if (accountHolder && accountHolder.trim() !== "")
+      updateFields.accountHolder = accountHolder.trim();
 
-    // ✅ image optional
-    if (req.files?.qrImage) {
+    // ✅ Image update only if new file uploaded
+    if (req.files?.qrImage?.[0]) {
       updateFields.qrImage = req.files.qrImage[0].path;
+    }
+
+    // ❗ If no field provided
+    if (Object.keys(updateFields).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No fields provided for update"
+      });
     }
 
     const profile = await AdminProfile.findOneAndUpdate(
@@ -325,13 +328,16 @@ exports.updateAdminPayment = async (req, res) => {
     );
 
     if (!profile) {
-      return res.status(404).json({ message: "Profile not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found"
+      });
     }
 
     res.json({
       success: true,
       message: "Payment updated successfully",
-      payment: profile.payment
+      updatedFields: Object.keys(updateFields)
     });
 
   } catch (err) {
@@ -342,7 +348,6 @@ exports.updateAdminPayment = async (req, res) => {
     });
   }
 };
-
 
 
 exports.getAdminPayment = async (req, res) => {
